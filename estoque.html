@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matéria Reativa - Controle de Estoque</title>
+    <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg" />
+    <script>
+      window.location.hash = 'estoque';
+    </script>
+    <link rel="stylesheet" crossorigin href="./assets/index.css">
+    <script type="module" crossorigin src="./assets/app.js"></script>
+    <script>
+      if (window.location.protocol === 'file:') {
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(function() {
+            var root = document.getElementById('root');
+            if (root && root.innerHTML.trim() === '') {
+              root.innerHTML = '<div style="font-family:system-ui,-apple-system,sans-serif;background:#0b1320;color:#f1f5f9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;"><div style="background:#131f33;border:1px solid #1e293b;border-radius:16px;padding:32px;max-width:540px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.5);"><div style="font-size:42px;margin-bottom:12px;">🧪</div><h2 style="font-size:22px;margin:0 0 12px;color:#38bdf8;font-weight:700;">Matéria Reativa - Controle de Estoque</h2><p style="font-size:14px;color:#94a3b8;line-height:1.6;margin-bottom:20px;">Você abriu este arquivo pelo Explorador do Windows (protocolo <code style="background:#0b1320;padding:2px 6px;border-radius:4px;color:#f59e0b;">file:///</code>). Por segurança do navegador, aplicações web modernas precisam de um servidor local ativo ou Live Server.</p><div style="background:#0b1320;border:1px solid #334155;border-radius:8px;padding:16px;text-align:left;margin-bottom:24px;font-size:13px;line-height:1.8;"><strong style="color:#e2e8f0;">Como rodar em 1 segundo:</strong><br>1. Dê 2 cliques no arquivo <strong style="color:#38bdf8;">iniciar.bat</strong> na pasta do projeto.<br>2. <em>No VS Code:</em> Clique com o botão direito aqui e escolha <strong>Open with Live Server</strong>.<br>3. <em>No Terminal:</em> Digite <code style="color:#10b981;">npm run dev</code>.</div><a href="https://ais-dev-knkresr6hid2cxyy6rkvrk-483494016021.us-west1.run.app#estoque" target="_blank" style="display:inline-block;background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Abrir Sistema Online Agora &rarr;</a></div></div>';
+            }
+          }, 1000);
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="font-family:sans-serif;padding:30px;text-align:center;color:#fff;background:#0b1320;min-height:100vh;">
+        <h2>Matéria Reativa - Controle de Estoque</h2>
+        <p>Por favor, ative o JavaScript no seu navegador para utilizar o sistema.</p>
+      </div>
+    </noscript>
+  </body>
+</html>

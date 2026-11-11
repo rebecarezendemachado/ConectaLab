@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <title>Matéria Reativa - Gestão Laboratorial</title>
+    <meta name="description" content="Sistema integrado de gestão de reagentes químicos, controle de estoque, solicitações docentes, compras e homologação de fornecedores para laboratórios acadêmicos e industriais." />
+    <meta property="og:title" content="Matéria Reativa - Gestão Laboratorial" />
+    <meta property="og:description" content="Sistema integrado de gestão de reagentes químicos, controle de estoque, solicitações docentes, compras e homologação de fornecedores para laboratórios acadêmicos e industriais." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg" />
+    <script>
+      // Se estiver em servidor estático/Apache (XAMPP), injeta o CSS compilado antecipadamente
+      if (window.location.port !== '3000' && window.location.port !== '5173' && window.location.hostname.indexOf('run.app') === -1) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.crossOrigin = 'anonymous';
+        link.href = './assets/index.css';
+        document.head.appendChild(link);
+      }
+
+      function carregarBundleContingencia() {
+        if (!document.querySelector('script[src*="app.js"]')) {
+          console.info('[Matéria Reativa] Carregando bundle compilado para XAMPP / Apache...');
+          var script = document.createElement('script');
+          script.type = 'module';
+          script.crossOrigin = 'anonymous';
+          script.src = './assets/app.js';
+          document.body.appendChild(script);
+        }
+      }
+
+      window.addEventListener('error', function(event) {
+        if (event.target && event.target.tagName === 'SCRIPT' && event.target.src && event.target.src.indexOf('main.tsx') !== -1) {
+          carregarBundleContingencia();
+        }
+      }, true);
+
+      setTimeout(function() {
+        var root = document.getElementById('root');
+        if (root && root.childNodes.length === 0) {
+          carregarBundleContingencia();
+        }
+      }, 400);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

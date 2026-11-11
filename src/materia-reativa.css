@@ -1,0 +1,312 @@
+/* ==========================================================================
+   MATÉRIA REATIVA - SISTEMA DE GESTÃO DE LABORATÓRIOS QUÍMICOS
+   FOLHA DE ESTILOS: TELAS DE ACESSO, IDENTIDADE VISUAL E ANIMAÇÕES
+   ========================================================================== */
+
+* {
+    /* margin/padding zerados removidos: o reset já vem do Tailwind (camada base).
+       Mantê-los aqui anulava todos os espaçamentos (p-*, m-*, space-*) do sistema. */
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   1. CONFIGURAÇÕES GERAIS E TIPOGRAFIA
+   ========================================================================== */
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+main.tela-acesso-main {
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   2. ANIMAÇÕES MODERNAS E MICRO-INTERAÇÕES
+   ========================================================================== */
+@keyframes painelEntrada {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes flutuarDna {
+    0% {
+        transform: translate3d(-1.2%, -0.8%, 0);
+    }
+    100% {
+        transform: translate3d(1.2%, 0.8%, 0);
+    }
+}
+
+@keyframes pulsarBrilhoLogo {
+    0%, 100% {
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+    }
+    50% {
+        filter: drop-shadow(0 4px 22px rgba(56, 189, 248, 0.4));
+    }
+}
+
+@keyframes modalEntrada {
+    0% {
+        opacity: 0;
+        transform: translateY(-16px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ==========================================================================
+   3. TELA DE ACESSO INICIAL (index.html / Escolha de Perfil)
+   ========================================================================== */
+.tela-acesso {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* Imagem de fundo com onda molecular de DNA 3D e efeito suave de respiração */
+.imagem-fundo {
+    position: absolute;
+    /* A imagem é 5% maior que a tela: sobra margem para deslizar sem mostrar bordas */
+    top: -2.5%;
+    left: -2.5%;
+    width: 105%;
+    height: 105%;
+    max-width: none; /* o Tailwind limita imagens a 100%; aqui precisamos dos 105% */
+    object-fit: cover;
+    object-position: left center;
+    z-index: 0;
+    /* Movimento leve só de deslocamento (sem zoom): o navegador move a imagem pronta,
+       sem recalcular os pixels a cada quadro, o que eliminava o tremor. */
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    animation: flutuarDna 32s ease-in-out infinite alternate;
+}
+
+/* Painel de seleção de acesso à direita do DNA */
+.painel-acesso {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 320px;
+    margin-right: 14%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: painelEntrada 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Cabeçalho com Logomarca e Informações */
+.cabecalho-acesso {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 230px;
+    height: auto;
+    margin: 0 auto 24px auto;
+    animation: pulsarBrilhoLogo 5s ease-in-out infinite;
+}
+
+.informacao-acesso {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.informacao-acesso h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.informacao-acesso p {
+    margin-top: 0;
+    margin-bottom: 28px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+}
+
+/* Navegação e Botões de Perfis (Aluno e Professor) */
+.navegacao-perfis {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.botao-perfil {
+    width: 100%;
+    max-width: 320px;
+    height: 54px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    color: #111111;
+    border-radius: 14px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.botao-perfil:hover {
+    background-color: #f8fafc;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(47, 128, 237, 0.4);
+}
+
+.botao-perfil:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.seta {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2F80ED;
+    transition: transform 0.2s ease;
+}
+
+.botao-perfil:hover .seta {
+    transform: translateX(4px);
+}
+
+/* ==========================================================================
+/* ==========================================================================
+   4. RESPONSIVIDADE MULTIDISPOSITIVO (MÓVEIS, TABLETS E DESKTOP)
+   ========================================================================== */
+.tela-acesso {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #000;
+    padding: 1.5rem 1rem;
+}
+
+@media (max-width: 1024px) {
+    .tela-acesso {
+        justify-content: center;
+        align-items: center;
+    }
+
+    .painel-acesso {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .imagem-fundo {
+        object-position: center;
+        opacity: 0.55;
+    }
+
+    .painel-acesso {
+        width: 100%;
+        max-width: 340px;
+        margin-right: 0;
+        margin: auto;
+        padding: 28px 20px;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.78);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .logo {
+        width: 180px;
+        margin-bottom: 18px;
+    }
+
+    .informacao-acesso p {
+        margin-bottom: 22px;
+        font-size: 13px;
+    }
+
+    .botao-perfil {
+        width: 100%;
+        height: 50px;
+        font-size: 15px;
+        touch-action: manipulation;
+    }
+}
+
+@media (max-width: 380px) {
+    .painel-acesso {
+        padding: 22px 16px;
+    }
+
+    .logo {
+        width: 160px;
+    }
+
+    .botao-perfil {
+        height: 46px;
+        font-size: 14px;
+        padding: 0 16px;
+    }
+}
+
+/* Foco e Acessibilidade */
+.botao-perfil:focus-visible {
+    outline: 2px solid #2F80ED;
+    outline-offset: 4px;
+}
