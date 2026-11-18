@@ -313,26 +313,86 @@ export const dataService = {
     } catch { return { configurada: false }; }
   },
 
-  async listarTurmas(): Promise<TurmaSala[]> { return repoTurmas.listar(); },
+  async listarTurmas(): Promise<TurmaSala[]> {
+    const [turmas, usuarios] = await Promise.all([repoTurmas.listar(), repoUsuarios.listar()]);
+    return turmas.map(t => {
+      const alunosDaTurma = usuarios
+        .filter(u => u.tipoPerfil === 'aluno' && (u.turma || '').toLowerCase() === (t.nome || '').toLowerCase())
+        .map(u => ({ id: u.id, nome: u.nome, matricula: (u as any).matricula || '', status: (u as any).status || 'ativo' }));
+      const professores = Array.isArray((t as any).professores) ? (t as any).professores : [];
+      return {
+        ...t,
+        ativa: (t as any).ativa !== false,
+        descricao: (t as any).descricao || '',
+        anoLetivo: (t as any).anoLetivo || '',
+        professores,
+        alunos: alunosDaTurma,
+        totalAlunos: alunosDaTurma.length,
+      } as TurmaSala;
+    });
+  },
+
   async salvarTurma(turma: Partial<TurmaSala> & { nome: string; professorIds?: string[] }): Promise<TurmaSala> {
     const id = (turma as any).id || gerarId('TUR');
-    const professores = (turma as any).professores || [];
-    const data: any = { ...turma, id, nome: turma.nome, ativa: turma.ativa !== false, totalAlunos: turma.totalAlunos || 0, professores };
+    const existente = (turma as any).id ? await repoTurmas.obterPorId(id) : null;
+
+    let professores: { id: string; nome: string }[] | undefined = (turma as any).professores;
+    if (Array.isArray((turma as any).professorIds)) {
+      const usuarios = await repoUsuarios.listar();
+      const ids: string[] = (turma as any).professorIds;
+      professores = ids
+        .map(pid => usuarios.find(u => u.id === pid))
+        .filter((u): u is Usuario => !!u)
+        .map(u => ({ id: u.id, nome: u.nome }));
+    }
+    if (!Array.isArray(professores)) {
+      professores = Array.isArray((existente as any)?.professores) ? (existente as any).professores : [];
+    }
+
+    const { professorIds, alunos, totalAlunos, ...rest } = turma as any;
+    const data: any = {
+      ...rest,
+      id,
+      nome: turma.nome.trim(),
+      descricao: turma.descricao || '',
+      anoLetivo: turma.anoLetivo || '',
+      ativa: turma.ativa !== false,
+      professores,
+    };
+
+    // preserva campos calculados/embutidos quando não informados (edição)
+    if (existente && !Array.isArray(alunos)) {
+      // alunos/totalAlunos são derivados dos usuários em listarTurmas; não sobrescrever se já existirem
+      if (Array.isArray((existente as any).alunos)) data.alunos = (existente as any).alunos;
+      if (typeof (existente as any).totalAlunos === 'number') data.totalAlunos = (existente as any).totalAlunos;
+    } else {
+      if (Array.isArray(alunos)) data.alunos = alunos;
+      if (typeof totalAlunos === 'number') data.totalAlunos = totalAlunos;
+    }
+
     await repoTurmas.criar(data);
     return data as TurmaSala;
   },
+
   async excluirTurma(id: string): Promise<void> { await repoTurmas.deletar(id); },
+
   async vincularAlunosTurma(id: string, alunoIds: string[]): Promise<{ movidos: number }> {
     const turma = await repoTurmas.obterPorId(id);
     if (!turma) throw new ErroApi('Turma não encontrada.', 404);
     let movidos = 0;
     for (const alunoId of alunoIds) {
-      try { await repoUsuarios.atualizar({ id: alunoId, turma: turma.nome } as any); movidos++; } catch { /* */ }
+      try {
+        await setDoc(doc(db, 'usuarios', alunoId), { turma: (turma as any).nome || '' }, { merge: true });
+        movidos++;
+      } catch { /* */ }
     }
     return { movidos };
   },
+
   async removerAlunoTurma(_id: string, alunoId: string): Promise<void> {
-    try { await repoUsuarios.atualizar({ id: alunoId, turma: '' } as any); } catch { /* */ }
+    try {
+      await setDoc(doc(db, 'usuarios', alunoId), { turma: '' }, { merge: true });
+    } catch { /* */ }
   },
 
   async listarDocumentos(): Promise<DocumentoArquivo[]> { return repoDocumentos.listar(); },

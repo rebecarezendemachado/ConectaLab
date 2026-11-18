@@ -30,9 +30,9 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Turmas: leitura para autenticados (cadastro precisa listar); escrita para staff/admin
+    // Turmas: leitura pública para permitir listar turmas no cadastro (antes do login); escrita para staff/admin
     match /turmas/{id} {
-      allow read: if signedIn();
+      allow read: if true;
       allow write: if isStaff();
     }
 
