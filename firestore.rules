@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+    }
+
+    function myProfile() {
+      return signedIn() ? userDoc().data : null;
+    }
+
+    function isAdmin() {
+      return signedIn() && userDoc().data.tipoPerfil == 'administrador';
+    }
+
+    function isStaff() {
+      return signedIn() && (userDoc().data.tipoPerfil == 'administrador' || userDoc().data.tipoPerfil == 'professor');
+    }
+
+    // Perfis de usuários: cada um lê/atualiza o próprio; admin pode gerenciar; criação permitida ao usuário autenticado para seu próprio doc
+    match /usuarios/{userId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == userId;
+      allow update: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Turmas: leitura para autenticados (cadastro precisa listar); escrita para staff/admin
+    match /turmas/{id} {
+      allow read: if signedIn();
+      allow write: if isStaff();
+    }
+
+    // Dados operacionais: autenticados podem ler/escrever (ajuste conforme sua necessidade)
+    match /produtos_quimicos/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /estoque_lotes/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /fornecedores/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /solicitacoes_laboratorio/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /compras_pedidos/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /compras_cotacoes/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /consumos_aluno/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /ocorrencias_aluno/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /alertas/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /documentos_arquivo/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+  }
+}
