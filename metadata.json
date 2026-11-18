@@ -1,0 +1,7 @@
+{
+  "name": "Matéria Reativa",
+  "description": "Sistema integrado de gestão de reagentes químicos, controle de estoque, solicitações docentes, compras e homologação de fornecedores para laboratórios acadêmicos e industriais.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

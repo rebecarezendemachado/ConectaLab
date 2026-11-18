@@ -1,0 +1,543 @@
+/* ==========================================================================
+   MATÉRIA REATIVA - TEMA VISUAL MODERNO
+   --------------------------------------------------------------------------
+   Esta folha é SOMENTE visual (cores, sombras, bordas, animações).
+   Ela não altera estrutura, tamanho de elementos, IDs, eventos nem lógica.
+   - Fica fora de @layer de propósito, para ter prioridade sobre o Tailwind.
+   - Tudo está dentro de @media screen: a impressão de etiquetas/relatórios
+     continua exatamente como era.
+   - Para desligar o tema inteiro, basta remover o import em main.tsx.
+   ========================================================================== */
+
+@media screen {
+
+  /* ------------------------------------------------------------------------
+     1. TOKENS: cinzas com leve tom azulado + tipografia
+     (o Tailwind lê estas variáveis, então todo o sistema herda)
+     ------------------------------------------------------------------------ */
+  :root {
+    --color-zinc-50: #F6F9FE;
+    --color-zinc-100: #EDF2FA;
+    --color-zinc-200: #DDE5F2;
+    --color-zinc-300: #C7D2E6;
+    --color-zinc-400: #8E9BB8;
+    --color-zinc-500: #5A6884;
+    --color-zinc-600: #48566F;
+    --color-zinc-700: #34405A;
+    --color-zinc-800: #1C2842;
+    --color-zinc-900: #0F1A33;
+    --color-zinc-950: #070D1E;
+
+    --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+
+    --mr-azul: #2F80ED;
+    --mr-azul-vivo: #2B7FFF;
+    --mr-azul-fundo: #1E6BDB;
+    --mr-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+  }
+
+  body,
+  button,
+  input,
+  select,
+  textarea {
+    font-family: var(--font-sans);
+  }
+
+  /* números alinhados em colunas (CAS, valores, estoque) */
+  .font-mono,
+  table td,
+  table th {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .font-mono {
+    letter-spacing: 0;
+  }
+
+  /* textos minúsculos ficam um pouco mais legíveis (aumento pequeno, para não quebrar linhas) */
+  .text-\[9px\] { font-size: 10px; }
+  .text-\[10px\] { font-size: 10.5px; }
+
+  ::selection {
+    background: rgba(47, 128, 237, 0.25);
+  }
+
+  /* barras de rolagem discretas */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #B9C7E0 transparent;
+  }
+  *::-webkit-scrollbar { width: 9px; height: 9px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background: #B9C7E0;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: #8FA6CE;
+    background-clip: content-box;
+    border: 2px solid transparent;
+  }
+
+  /* ------------------------------------------------------------------------
+     2. FUNDO DO SISTEMA (container raiz do painel)
+     ------------------------------------------------------------------------ */
+  .bg-\[\#F0F3F9\] {
+    background-color: #EEF3FB;
+    background-image:
+      radial-gradient(900px 520px at 88% -8%, rgba(47, 128, 237, 0.11), transparent 62%),
+      radial-gradient(760px 460px at 6% 108%, rgba(30, 107, 219, 0.07), transparent 62%);
+    background-attachment: fixed;
+  }
+
+  /* ------------------------------------------------------------------------
+     3. BARRA LATERAL
+     ------------------------------------------------------------------------ */
+  aside.bg-black {
+    background: linear-gradient(180deg, #040A1A 0%, #071230 58%, #0A1A40 100%);
+    border-right: 1px solid rgba(47, 128, 237, 0.20);
+    box-shadow: 8px 0 36px -14px rgba(8, 20, 60, 0.55);
+  }
+
+  aside .bg-black {
+    background: transparent;
+  }
+
+  aside .border-zinc-900 {
+    border-color: rgba(120, 160, 255, 0.13);
+  }
+
+  /* item de menu ativo: destaque azul com marcador lateral */
+  aside nav button.bg-zinc-800 {
+    background: linear-gradient(90deg, rgba(47, 128, 237, 0.30), rgba(47, 128, 237, 0.07));
+    box-shadow: inset 3px 0 0 var(--mr-azul), 0 0 0 1px rgba(47, 128, 237, 0.28);
+    color: #fff;
+  }
+
+  aside nav button:not(.bg-zinc-800):hover {
+    background: rgba(47, 128, 237, 0.11);
+    transform: translateX(3px);
+  }
+
+  aside nav button svg {
+    transition: transform 0.25s var(--mr-ease), color 0.2s ease;
+  }
+
+  aside nav button:hover svg {
+    transform: scale(1.12);
+  }
+
+  /* ------------------------------------------------------------------------
+     4. CABEÇALHO SUPERIOR
+     ------------------------------------------------------------------------ */
+  main > header {
+    background: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid rgba(47, 128, 237, 0.13);
+    box-shadow: 0 6px 24px -16px rgba(15, 40, 100, 0.35);
+  }
+
+  /* botões do cabeçalho nunca quebram o texto em duas linhas */
+  main > header button {
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------------------------------
+     5. CARDS: brancos com sombra suave / métricas azuis com brilho
+     ------------------------------------------------------------------------ */
+  .bg-white.rounded-2xl,
+  .bg-white.rounded-3xl {
+    border-color: rgba(47, 128, 237, 0.10);
+    box-shadow: 0 1px 2px rgba(15, 35, 80, 0.04), 0 14px 32px -18px rgba(15, 45, 110, 0.20);
+  }
+
+  /* cartões azuis em degradê (métricas e botões principais) */
+  [class*="from-[#2B7FFF]"] {
+    box-shadow: 0 12px 28px -12px rgba(30, 107, 219, 0.60), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transition: transform 0.28s var(--mr-ease), box-shadow 0.28s var(--mr-ease), filter 0.2s ease;
+  }
+
+  [class*="from-[#2B7FFF]"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px -14px rgba(30, 107, 219, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+
+  /* modais: sombra funda e profissional */
+  .fixed.inset-0 .shadow-2xl {
+    box-shadow: 0 32px 80px -24px rgba(6, 18, 58, 0.55), 0 0 0 1px rgba(47, 128, 237, 0.10);
+  }
+
+  /* ------------------------------------------------------------------------
+     6. BOTÕES E CAMPOS
+     ------------------------------------------------------------------------ */
+  button:not(:disabled) {
+    transition:
+      transform 0.18s var(--mr-ease),
+      box-shadow 0.22s var(--mr-ease),
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      filter 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  button:not(:disabled):active {
+    transform: scale(0.97);
+  }
+
+  /* botões azuis principais */
+  button[class*="bg-[#2F80ED]"]:hover,
+  button[class*="bg-blue-600"]:hover {
+    filter: brightness(1.07);
+    box-shadow: 0 10px 22px -10px rgba(47, 128, 237, 0.75);
+  }
+
+  /* botões de exclusão / ações críticas ganham brilho vermelho ao passar o mouse */
+  button.bg-rose-50:hover,
+  button.bg-rose-600:hover,
+  button.bg-red-600:hover {
+    box-shadow: 0 8px 18px -10px rgba(225, 29, 72, 0.65);
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* foco visível por teclado */
+  .bg-\[\#F0F3F9\] button:focus-visible,
+  .bg-\[\#F0F3F9\] a:focus-visible {
+    outline: 2px solid var(--mr-azul);
+    outline-offset: 2px;
+  }
+
+  /* campos de formulário do painel */
+  .bg-\[\#F0F3F9\] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  .bg-\[\#F0F3F9\] select,
+  .bg-\[\#F0F3F9\] textarea {
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  }
+
+  .bg-\[\#F0F3F9\] input:focus,
+  .bg-\[\#F0F3F9\] select:focus,
+  .bg-\[\#F0F3F9\] textarea:focus {
+    border-color: var(--mr-azul);
+    box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.15);
+  }
+
+  .bg-\[\#F0F3F9\] ::placeholder {
+    color: #8E9BB8;
+    opacity: 1;
+  }
+
+  /* ------------------------------------------------------------------------
+     7. TABELAS
+     ------------------------------------------------------------------------ */
+  table tbody tr {
+    transition: background-color 0.15s ease;
+  }
+
+  table tbody tr:hover {
+    background-color: rgba(47, 128, 237, 0.05);
+  }
+
+  /* ------------------------------------------------------------------------
+     8. ANIMAÇÕES (entrada de tela e de janelas)
+     ------------------------------------------------------------------------ */
+  @keyframes mr-subir {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes mr-surgir {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes mr-janela {
+    from { opacity: 0; transform: translateY(14px) scale(0.975); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* conteúdo de cada tela entra em sequência suave */
+  .bg-\[\#F0F3F9\] > main > :not(header) > * {
+    animation: mr-subir 0.5s var(--mr-ease) backwards;
+  }
+  .bg-\[\#F0F3F9\] > main > :not(header) > *:nth-child(2) { animation-delay: 0.06s; }
+  .bg-\[\#F0F3F9\] > main > :not(header) > *:nth-child(3) { animation-delay: 0.12s; }
+  .bg-\[\#F0F3F9\] > main > :not(header) > *:nth-child(4) { animation-delay: 0.18s; }
+  .bg-\[\#F0F3F9\] > main > :not(header) > *:nth-child(5) { animation-delay: 0.24s; }
+
+  /* janelas (modais): fundo surge, caixa sobe */
+  .fixed.inset-0.z-50.flex {
+    animation: mr-surgir 0.2s ease backwards;
+  }
+
+  .fixed.inset-0.z-50.flex > div {
+    animation: mr-janela 0.3s var(--mr-ease) backwards;
+  }
+
+  /* ------------------------------------------------------------------------
+     9. ACESSIBILIDADE: respeita quem prefere menos movimento
+     ------------------------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      animation-delay: 0s !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    /* o fundo da tela inicial fica parado (sem loop) */
+    .imagem-fundo {
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+}
+
+
+/* ==========================================================================
+   AJUSTES EXCLUSIVOS PARA CELULAR E TABLET (abaixo de 1024px)
+   O desktop (1024px ou mais) NÃO é afetado por nenhuma regra desta seção.
+   ========================================================================== */
+@media screen and (max-width: 1023px) {
+
+  /* --- 2.1 MENU LATERAL: nenhum item pode ficar escondido -------------------
+     Antes: o menu não tinha rolagem interna e, em telas baixas, o fim da lista
+     e o rodapé do usuário saíam da tela. Agora a lista rola e o rodapé fica fixo. */
+  aside {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    max-width: 86vw;
+  }
+
+  aside > div:first-child {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  aside > div:last-child {
+    flex: 0 0 auto;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  /* área principal acompanha a altura real visível do celular (barra do navegador) */
+  main {
+    max-height: 100dvh;
+  }
+
+  /* --- 2.3 BARRA SUPERIOR: proporcional, sem sobreposição -------------------- */
+  main > header {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  main > header > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 0.5rem;
+  }
+
+  main > header > div:first-child > div {
+    min-width: 0;
+  }
+
+  main > header > div:first-child > div > div {
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  main > header h1 {
+    font-size: 0.9375rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  main > header > div:last-child {
+    flex: 0 0 auto;
+    gap: 0.25rem;
+  }
+
+  /* --- 2.2 CARTÕES AZUIS: grade compacta 2x2 ---------------------------------- */
+  .grid:has(> div[class*="from-[#2B7FFF]"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
+  }
+
+  .grid > div[class*="from-[#2B7FFF]"] {
+    position: relative;
+    display: block;
+    min-height: 0;
+    padding: 0.75rem;
+    border-radius: 1rem;
+  }
+
+  /* os cartões não "pulam" ao tocar (evita deslocamento em telas de toque) */
+  .grid > div[class*="from-[#2B7FFF]"]:hover {
+    transform: none;
+  }
+
+  /* título (com bolinha): deixa espaço para o ícone no canto */
+  .grid > div[class*="from-[#2B7FFF]"] > div:first-child > div:first-child {
+    padding-right: 1.9rem;
+  }
+
+  .grid > div[class*="from-[#2B7FFF]"] h3 {
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  .grid > div[class*="from-[#2B7FFF]"] > div:first-child {
+    margin-top: 0;
+  }
+
+  /* número em destaque, sem cortar valores como "R$ 12.005,00" */
+  .grid > div[class*="from-[#2B7FFF]"] .font-mono {
+    font-size: clamp(1.05rem, 5.4vw, 1.5rem);
+    max-width: none;
+    margin-top: 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .grid > div[class*="from-[#2B7FFF]"] p {
+    font-size: 0.6875rem;
+    line-height: 1.25;
+    margin-top: 0.3rem;
+  }
+
+  /* ícone menor, no canto superior direito */
+  .grid > div[class*="from-[#2B7FFF]"] > div:last-child {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.625rem;
+  }
+
+  .grid > div[class*="from-[#2B7FFF]"] > div:last-child svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* telas médias (tablet / celular deitado): 4 cartões na mesma linha */
+@media screen and (min-width: 640px) and (max-width: 1023px) {
+  .grid:has(> div[class*="from-[#2B7FFF]"]:nth-child(4):last-child) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* celulares: selo do perfil compacto ("Docente" / "Aluno") */
+@media screen and (max-width: 767px) {
+  main > header .rounded-full.select-none {
+    flex-shrink: 0;
+    padding: 0.125rem 0.5rem;
+    gap: 0.25rem;
+    font-size: 0.65625rem;
+  }
+
+  main > header .rounded-full.select-none > span {
+    display: none;
+  }
+
+  main > header .rounded-full.select-none.bg-indigo-50::after {
+    content: "Docente";
+  }
+
+  main > header .rounded-full.select-none.bg-blue-50::after {
+    content: "Aluno";
+  }
+}
+
+/* celulares estreitos: botão de ação do topo vira só o ícone (o nome continua
+   disponível para leitores de tela, pois o texto permanece no HTML) */
+@media screen and (max-width: 600px) {
+  main > header > div:last-child > button:last-child {
+    font-size: 0;
+    gap: 0;
+    padding: 0.625rem;
+    min-width: 2.5rem;
+    justify-content: center;
+  }
+}
+
+/* celulares estreitos (até 439px): o selo do perfil fica abaixo do título,
+   assim o título "Painel de Controle" aparece inteiro, sem reticências */
+@media screen and (max-width: 439px) {
+  main > header > div:first-child > div > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+  }
+
+  main > header h1 {
+    overflow: visible;
+    text-overflow: clip;
+  }
+}
+
+/* abaixo de 768px o subtítulo longo do cabeçalho some (economiza altura; o perfil continua no selo) */
+@media screen and (max-width: 767px) {
+  main > header p {
+    display: none;
+  }
+}
+
+
+/* ==========================================================================
+   LEGIBILIDADE / CONTRASTE (WCAG 1.4.3, nível AA)
+   Escurecimento sutil de textos claros demais sobre fundo claro. Não altera
+   a paleta: são os mesmos cinzas e o mesmo azul, apenas um tom mais profundo
+   onde o texto não alcançava a razão mínima de 4,5:1.
+   ========================================================================== */
+@media screen {
+  main .text-zinc-400 {
+    color: #596781;
+  }
+
+  main ::placeholder {
+    color: #5E6B87;
+    opacity: 1;
+  }
+
+  main [class~="text-[#2F80ED]"] {
+    color: #1D5FC4;
+  }
+
+  /* em superfícies escuras ou azuis, os tons claros originais continuam valendo */
+  :is(.bg-black, .bg-zinc-900, .bg-zinc-950, .bg-slate-900, [class*="from-[#2B7FFF]"]) .text-zinc-400 {
+    color: #A9B6D3;
+  }
+
+  :is(.bg-black, .bg-zinc-900, .bg-zinc-950, .bg-slate-900, [class*="from-[#2B7FFF]"]) [class~="text-[#2F80ED]"] {
+    color: #6EA8FF;
+  }
+
+  /* textos de status sobre fundo claro: tom um nível mais profundo */
+  main .text-amber-600 { color: #B45309; }
+  main .text-emerald-600 { color: #047857; }
+  main .text-rose-500 { color: #E11D48; }
+  main .text-orange-600 { color: #C2410C; }
+
+  :is(.bg-black, .bg-zinc-900, .bg-zinc-950, .bg-slate-900, [class*="from-[#2B7FFF]"]) :is(.text-amber-600, .text-emerald-600, .text-rose-500, .text-orange-600) {
+    color: inherit;
+  }
+
+  /* seta das telas de acesso (azul da marca sobre branco) */
+  .seta { color: #1D5FC4; }
+}

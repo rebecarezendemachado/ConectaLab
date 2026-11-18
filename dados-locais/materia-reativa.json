@@ -1,0 +1,27 @@
+{
+  "schema": "materia-reativa/json-db",
+  "versao": 1,
+  "geradoEm": "2026-11-18T21:28:48.374Z",
+  "tabelas": {
+    "admin_unico": [],
+    "alerta_destinatarios": [],
+    "alertas": [],
+    "alertas_descartados": [],
+    "auditoria": [],
+    "compras_cotacoes": [],
+    "compras_historico": [],
+    "compras_pedidos": [],
+    "compras_recebimentos": [],
+    "consumos_aluno": [],
+    "documentos_arquivo": [],
+    "estoque_lotes": [],
+    "fornecedores": [],
+    "ocorrencias_aluno": [],
+    "produtos_quimicos": [],
+    "sessoes": [],
+    "solicitacoes_laboratorio": [],
+    "turma_professores": [],
+    "turmas": [],
+    "usuarios": []
+  }
+}

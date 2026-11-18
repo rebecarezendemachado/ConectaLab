@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 130" fill="none">
+  <!-- Definições de Gradiente e Filtro de Brilho do Reagente Líquido -->
+  <defs>
+    <linearGradient id="liquidBlueLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#38BDF8" />
+      <stop offset="100%" stopColor="#0070F3" />
+    </linearGradient>
+  </defs>
+
+  <!-- ==================== PARTE 1: BÉQUER + M A T E R I A ==================== -->
+  <g transform="translate(-114.5, -4)">
+    <!-- Bolhas Químicas Flutuantes Superiores -->
+    <circle cx="206" cy="18" r="4.2" fill="#FFFFFF" />
+    <circle cx="198" cy="27" r="3.2" fill="#FFFFFF" />
+
+    <!-- Gargalo e Boca do Balão -->
+    <path d="M190 38 H214" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" />
+    <path d="M194 38 V48 L176 81 C174 84.5 176.5 89 180.5 89 H223.5 C227.5 89 230 84.5 228 81 L210 48 V38"
+          stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+    <!-- Líquido Azul no Fundo do Balão -->
+    <path d="M182.5 70 C189 67.5 204 67.5 221.5 70 L225.5 80 C226.5 82.5 224.5 85.5 221.5 85.5 H182.5 C179.5 85.5 177.5 82.5 178.5 80 Z"
+          fill="url(#liquidBlueLight)" />
+
+    <!-- Bolhas no Interior do Líquido -->
+    <circle cx="201" cy="74" r="2.8" fill="#FFFFFF" opacity="0.95" />
+    <circle cx="210" cy="77" r="2.2" fill="#FFFFFF" opacity="0.95" />
+
+    <!-- PALAVRA 'M A T E R I A' -->
+    <!-- M -->
+    <path d="M125 89 V43 L142 66 L159 43 V89" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- T -->
+    <path d="M246 44 H272 M259 44 V89" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- E -->
+    <path d="M288 44 H310 M288 66.5 H304 M288 89 H310 M288 44 V89" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- R -->
+    <path d="M326 89 V44 H344 C353 44 358 49 358 56.5 C358 64 353 69 344 69 H326 M342 69 L358 89" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- I -->
+    <path d="M374 44 V89" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" />
+
+    <!-- Letra A estilizada como Λ (sem barra horizontal) -->
+    <path d="M390 89 L407 44 L424 89" stroke="#FFFFFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- ==================== PARTE 2: SUBTÍTULO 'R E Λ T I V Λ' ==================== -->
+  <g transform="translate(-89.5, -4)">
+    <!-- R -->
+    <path d="M142 124 V107 H151 C156 107 159 109.5 159 113.5 C159 117.5 156 120 151 120 H142 M150 120 L159 124" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- E -->
+    <path d="M177 107 H191 M177 115.5 H187 M177 124 H191 M177 107 V124" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Λ (A sem barra) -->
+    <path d="M209 124 L219 107 L229 124" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- T -->
+    <path d="M247 107 H263 M255 107 V124" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- I -->
+    <path d="M281 107 V124" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+
+    <!-- V -->
+    <path d="M299 107 L309 124 L319 107" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Λ (A sem barra) -->
+    <path d="M337 124 L347 107 L357 124" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

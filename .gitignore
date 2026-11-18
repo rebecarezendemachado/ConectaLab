@@ -1,0 +1,14 @@
+node_modules/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+.aistudio/
+dados-locais/*
+!dados-locais/.gitkeep
+!dados-locais/materia-reativa.json
+dist/
+assets/app.js
+assets/index-*.js
+assets/index-*.css

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Ferramentas da administradora — Matéria Reativa</title>
+  <style>
+    :root { --azul:#1E6BDB; --tinta:#0F1A33; --cinza:#48566F; --linha:#C7D2E6; --fundo:#EEF3FB; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--fundo); color:var(--tinta); font:15px/1.5 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+    h1 { font-size: 22px; margin: 0 0 4px; } h2 { font-size: 17px; margin: 0 0 8px; }
+    p.sub { margin: 0 0 20px; color: var(--cinza); }
+    section { background:#fff; border:1px solid var(--linha); border-radius:16px; padding:18px; margin-bottom:16px; }
+    button { font:600 14px inherit; font-family:inherit; border-radius:10px; border:1px solid var(--linha); background:#F6F9FE; color:var(--tinta); padding:10px 14px; min-height:42px; cursor:pointer; }
+    button.principal { background:var(--azul); border-color:var(--azul); color:#fff; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    button:focus-visible, input:focus-visible, a:focus-visible { outline:3px solid var(--azul); outline-offset:2px; }
+    input[type=text] { font:inherit; padding:10px 12px; border:1px solid var(--linha); border-radius:10px; min-height:42px; min-width:220px; }
+    label { cursor:pointer; } .linha { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0; }
+    .aviso { background:#EFF6FF; border:1px solid #BFD6FA; border-radius:12px; padding:10px 14px; color:#0A2E75; }
+    .erro { background:#FEF2F2; border:1px solid #F5B5B5; border-radius:12px; padding:10px 14px; color:#8A0F1F; }
+    .ok { color:#064E2B; font-weight:600; }
+    ul { margin:6px 0 0; padding-left:20px; } .turma { border-top:1px solid var(--linha); padding:12px 0; } .turma:first-of-type { border-top:0; }
+    .profs { display:flex; flex-wrap:wrap; gap:6px 18px; margin:8px 0; }
+    pre { background:#F6F9FE; border:1px solid var(--linha); border-radius:10px; padding:10px; overflow:auto; max-height:260px; font-size:13px; }
+    .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+  </style>
+</head>
+<body>
+<main id="conteudo" tabindex="-1">
+  <h1>Ferramentas da administradora</h1>
+  <p class="sub">Página de apoio fora do sistema principal. Só a administradora (Kátia) consegue usar.</p>
+  <div id="estado" role="status" aria-live="polite"></div>
+
+  <section id="bloco-pendentes" hidden>
+    <h2>1. Cadastros de acesso</h2>
+    <p class="sub">Os cadastros de alunos e professores são liberados automaticamente, sem necessidade de aprovação manual. Se houver contas antigas pendentes no banco, você ainda pode ativá-las ou removê-las abaixo.</p>
+    <div id="lista-pendentes"></div>
+  </section>
+
+  <section id="bloco-turmas" hidden>
+    <h2>2. Turmas e professores responsáveis</h2>
+    <p class="sub">Cada professor só enxerga os alunos das turmas em que estiver marcado. Marque e clique em Salvar.</p>
+    <div id="lista-turmas"></div>
+    <div class="linha">
+      <label for="nova-turma">Nova turma:</label>
+      <input type="text" id="nova-turma" maxlength="100" placeholder="Ex.: 3º Química A" />
+      <button type="button" id="criar-turma">Criar turma</button>
+    </div>
+  </section>
+
+  <section id="bloco-importar" hidden>
+    <h2>3. Levar os dados antigos deste navegador para o banco central</h2>
+    <p class="sub">Se, antes desta atualização, alguém cadastrou usuários, produtos ou estoque <strong>neste mesmo navegador</strong>, esses dados ainda estão guardados aqui. Esta ferramenta envia tudo para o banco central <strong>sem apagar nada</strong> do navegador.</p>
+    <div id="resumo-local" class="aviso"></div>
+    <div class="linha">
+      <button type="button" id="baixar">1º. Baixar cópia de segurança (arquivo JSON)</button>
+      <button type="button" id="importar" class="principal">2º. Importar para o banco central</button>
+    </div>
+    <p class="sub">Usuários que já existem (mesmo e-mail) são mantidos como estão. Senhas antigas são convertidas e guardadas protegidas. Repetir a importação não duplica registros.</p>
+    <div id="relatorio" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var CHAVES = [
+    ['usuarios', 'materia_reativa_db_usuarios', '/api/usuarios', 'usuário(s)'],
+    ['produtos', 'materia_reativa_db_produtos', '/api/produtos', 'produto(s)'],
+    ['estoque', 'materia_reativa_db_estoque', '/api/estoque', 'item(ns) de estoque'],
+    ['fornecedores', 'materia_reativa_db_fornecedores', '/api/fornecedores', 'fornecedor(es)'],
+    ['solicitacoes', 'materia_reativa_db_solicitacoes', '/api/solicitacoes', 'solicitação(ões)'],
+    ['compras', 'materia_reativa_db_compras', '/api/compras', 'compra(s)'],
+    ['consumos', 'materia_reativa_db_consumos_aluno', '/api/consumos', 'registro(s) de consumo'],
+    ['ocorrencias', 'materia_reativa_db_ocorrencias_aluno', '/api/ocorrencias', 'ocorrência(s)']
+  ];
+
+  function api(url, metodo, corpo) {
+    return fetch(url, { method: metodo || 'GET', credentials: 'same-origin', headers: corpo ? { 'Content-Type': 'application/json' } : {}, body: corpo ? JSON.stringify(corpo) : undefined })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, ok: r.ok, corpo: j }; }); });
+  }
+  function aviso(texto, tipo) {
+    var d = document.createElement('div'); d.className = tipo || 'aviso'; d.textContent = texto;
+    $('estado').innerHTML = ''; $('estado').appendChild(d);
+  }
+  function lerLocal(chave) { try { var v = JSON.parse(localStorage.getItem(chave) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+
+  /* ------------------------------ pendentes ------------------------------ */
+  function carregarPendentes() {
+    return api('/api/usuarios').then(function (r) {
+      var pend = (r.corpo || []).filter(function (u) { return u.status === 'pendente'; });
+      var raiz = $('lista-pendentes'); raiz.innerHTML = '';
+      $('bloco-pendentes').hidden = false;
+      if (!pend.length) { raiz.textContent = 'Nenhum cadastro pendente encontrado. Novos cadastros entram automaticamente como ativos.'; return; }
+      pend.forEach(function (u) {
+        var linha = document.createElement('div'); linha.className = 'linha';
+        var txt = document.createElement('span'); txt.textContent = u.nome + ' — ' + u.email + ' (' + (u.tipoPerfil === 'professor' ? 'professor(a)' : u.tipoPerfil) + ')'; linha.appendChild(txt);
+        var ok = document.createElement('button'); ok.type = 'button'; ok.className = 'principal'; ok.textContent = 'Aprovar ' + u.nome;
+        ok.addEventListener('click', function () {
+          ok.disabled = true;
+          api('/api/usuarios', 'POST', { id: u.id, nome: u.nome, email: u.email, tipoPerfil: u.tipoPerfil, matricula: u.matricula, turma: u.turma, departamento: u.departamento, cargo: u.cargo, status: 'ativo' }).then(function (x) {
+            aviso(x.ok ? u.nome + ' aprovado(a). Já pode entrar no sistema.' : (x.corpo.error || 'Não foi possível aprovar.'), x.ok ? 'aviso' : 'erro'); carregarPendentes();
+          });
+        });
+        var no = document.createElement('button'); no.type = 'button'; no.textContent = 'Recusar ' + u.nome;
+        no.addEventListener('click', function () {
+          if (!window.confirm('Recusar e excluir o cadastro de ' + u.nome + '?')) return;
+          api('/api/usuarios/' + encodeURIComponent(u.id), 'DELETE').then(function (x) { aviso(x.ok ? 'Cadastro recusado.' : (x.corpo.error || 'Não foi possível recusar.'), x.ok ? 'aviso' : 'erro'); carregarPendentes(); });
+        });
+        linha.appendChild(ok); linha.appendChild(no); raiz.appendChild(linha);
+      });
+    });
+  }
+
+  /* ------------------------------- turmas ------------------------------- */
+  var professores = [];
+  function desenharTurmas(turmas) {
+    var raiz = $('lista-turmas'); raiz.innerHTML = '';
+    if (!turmas.length) { raiz.textContent = 'Ainda não há turmas. Elas são criadas sozinhas quando um aluno se cadastra, ou aqui embaixo.'; return; }
+    turmas.forEach(function (t) {
+      var bloco = document.createElement('div'); bloco.className = 'turma';
+      var titulo = document.createElement('strong'); titulo.textContent = t.nome + ' — ' + t.totalAlunos + ' aluno(s)'; bloco.appendChild(titulo);
+      var grupo = document.createElement('div'); grupo.className = 'profs'; grupo.setAttribute('role', 'group'); grupo.setAttribute('aria-label', 'Professores responsáveis pela turma ' + t.nome);
+      var marcados = (t.professores || []).map(function (p) { return p.id; });
+      professores.forEach(function (p) {
+        var l = document.createElement('label'); var c = document.createElement('input'); c.type = 'checkbox'; c.value = p.id; c.checked = marcados.indexOf(p.id) >= 0;
+        l.appendChild(c); l.appendChild(document.createTextNode(' ' + p.nome)); grupo.appendChild(l);
+      });
+      if (!professores.length) grupo.textContent = 'Nenhum professor cadastrado ainda.';
+      bloco.appendChild(grupo);
+      var salvar = document.createElement('button'); salvar.type = 'button'; salvar.textContent = 'Salvar professores da turma ' + t.nome;
+      salvar.addEventListener('click', function () {
+        var ids = Array.prototype.map.call(grupo.querySelectorAll('input:checked'), function (c) { return c.value; });
+        salvar.disabled = true;
+        api('/api/turmas', 'POST', { id: t.id, nome: t.nome, descricao: t.descricao, anoLetivo: t.anoLetivo, ativa: t.ativa, professorIds: ids }).then(function (r) {
+          salvar.disabled = false; aviso(r.ok ? 'Turma "' + t.nome + '" salva.' : (r.corpo.error || 'Não foi possível salvar.'), r.ok ? 'aviso' : 'erro');
+        });
+      });
+      bloco.appendChild(salvar); raiz.appendChild(bloco);
+    });
+  }
+  function carregarTurmas() {
+    return Promise.all([api('/api/turmas'), api('/api/usuarios')]).then(function (res) {
+      professores = (res[1].corpo || []).filter(function (u) { return u.tipoPerfil === 'professor' && (u.status || 'ativo') === 'ativo'; });
+      desenharTurmas(res[0].corpo || []);
+    });
+  }
+  $('criar-turma').addEventListener('click', function () {
+    var nome = $('nova-turma').value.trim(); if (!nome) { aviso('Digite o nome da turma.', 'erro'); return; }
+    api('/api/turmas', 'POST', { nome: nome, professorIds: [] }).then(function (r) {
+      if (r.ok) { $('nova-turma').value = ''; aviso('Turma criada.'); carregarTurmas(); } else aviso(r.corpo.error || 'Não foi possível criar.', 'erro');
+    });
+  });
+
+  /* ------------------------------ importação ------------------------------ */
+  function resumoLocal() {
+    var partes = CHAVES.map(function (c) { return [lerLocal(c[1]).length, c[3]]; }).filter(function (p) { return p[0] > 0; });
+    $('resumo-local').textContent = partes.length ? 'Neste navegador há: ' + partes.map(function (p) { return p[0] + ' ' + p[1]; }).join(', ') + '.' : 'Não há dados antigos guardados neste navegador. Nada a importar aqui.';
+    $('importar').disabled = !partes.length; $('baixar').disabled = !partes.length;
+  }
+  $('baixar').addEventListener('click', function () {
+    var copia = {}; CHAVES.forEach(function (c) { copia[c[0]] = lerLocal(c[1]); });
+    var blob = new Blob([JSON.stringify(copia, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'copia-dados-materia-reativa-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); aviso('Cópia de segurança baixada. Guarde o arquivo.');
+  });
+  $('importar').addEventListener('click', function () {
+    var botao = $('importar'); botao.disabled = true; var linhas = []; var tot = { ok: 0, ja: 0, erro: 0 };
+    function registrar(txt) { linhas.push(txt); }
+    api('/api/usuarios').then(function (r) {
+      var emails = {}; (r.corpo || []).forEach(function (u) { emails[String(u.email).toLowerCase()] = true; });
+      var fila = [];
+      CHAVES.forEach(function (c) {
+        lerLocal(c[1]).forEach(function (item) { fila.push({ rotulo: c[0], url: c[2], item: item }); });
+      });
+      var i = 0;
+      (function proximo() {
+        if (i >= fila.length) {
+          var pre = document.createElement('pre'); pre.textContent = linhas.join('\n') || '(sem observações)';
+          var t = document.createElement('p'); t.className = 'ok'; t.textContent = 'Concluído: ' + tot.ok + ' importado(s), ' + tot.ja + ' já existia(m), ' + tot.erro + ' com problema.';
+          $('relatorio').innerHTML = ''; $('relatorio').appendChild(t); $('relatorio').appendChild(pre); botao.disabled = false; carregarTurmas(); return;
+        }
+        var f = fila[i++];
+        if (f.rotulo === 'usuarios' && f.item && emails[String(f.item.email || '').toLowerCase()]) { tot.ja++; return void proximo(); }
+        api(f.url, 'POST', f.item).then(function (r) {
+          if (r.ok) tot.ok++; else { tot.erro++; registrar(f.rotulo + ' "' + (f.item.nome || f.item.email || f.item.id) + '": ' + (r.corpo.error || ('erro ' + r.status))); }
+          proximo();
+        });
+      })();
+    });
+  });
+
+  /* -------------------------------- início -------------------------------- */
+  api('/api/auth/me').then(function (r) {
+    if (r.status === 401) { aviso('Você precisa entrar primeiro. Abra o sistema, entre como Professor(a) com a conta da administradora e volte a esta página.', 'erro'); return; }
+    if (!r.ok || !r.corpo.usuario || r.corpo.usuario.tipoPerfil !== 'administrador') { aviso('Somente a administradora pode usar esta página.', 'erro'); return; }
+    aviso('Olá, ' + r.corpo.usuario.nome + '. Você está conectada ao banco central.');
+    $('bloco-turmas').hidden = false; $('bloco-importar').hidden = false; resumoLocal(); carregarPendentes(); carregarTurmas();
+  });
+})();
+</script>
+</body>
+</html>
