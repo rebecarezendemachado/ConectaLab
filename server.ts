@@ -193,45 +193,50 @@ async function connectToMySQL(jaTentouCriar = false): Promise<boolean> {
 }
 
 // =============================================================================
-// ESCOLHA DO BANCO
-//   - MySQL configurado no .env (DATABASE_URL ou MYSQL_*)  -> usa o MySQL; se não conectar, AVISA e para.
-//   - Nada configurado (ou MODO_LOCAL=true)                 -> banco local JSON em ./dados-locais (zerado, persistente)
-//   - A administradora é criada pelo formulário de primeiro acesso local ou pelas variáveis ADMIN_*.
-// =============================================================================
-let MODO_LOCAL = !PRODUCAO && (process.env.MODO_LOCAL === 'true' || (process.env.MODO_LOCAL !== 'false' && !getMySQLConfig()));
-if (!MODO_LOCAL) {
-  const mysqlOk = await connectToMySQL();
-  if (!mysqlOk && !PRODUCAO) {
-    console.error('\n[MySQL] NÃO FOI POSSÍVEL CONECTAR: ' + (mysqlStatus.error || 'sem detalhes'));
-    console.error('  1) Abra o XAMPP e clique em "Start" no MySQL (ele precisa estar verde).');
-    console.error('  2) Confira usuário/senha/host no arquivo .env (XAMPP: usuário root, senha vazia).');
-    console.error('  3) Sem MySQL, para testar mesmo assim, coloque MODO_LOCAL="true" no .env (banco SQLite local).\n');
-    process.exit(1);
+  // ESCOLHA DO BANCO
+  //   - BANCO_JSON=true ou MODO_LOCAL=true (explícito)       -> banco em JSON (./dados-locais), mesmo em produção se forçado
+  //   - MySQL configurado (DATABASE_URL ou MYSQL_*)          -> usa MySQL
+  //   - Nada configurado                                     -> em desenvolvimento, banco em JSON; em produção exige MySQL ou BANCO_JSON=true
+  //   - A administradora é criada pelo formulário de primeiro acesso local ou pelas variáveis ADMIN_*.
+  // =============================================================================
+  const forcarJson = process.env.BANCO_JSON === 'true' || process.env.MODO_LOCAL === 'true';
+  let MODO_LOCAL = forcarJson || (!PRODUCAO && process.env.MODO_LOCAL !== 'false' && !getMySQLConfig());
+  if (!MODO_LOCAL) {
+    const mysqlOk = await connectToMySQL();
+    if (!mysqlOk) {
+      if (!PRODUCAO) {
+        console.error('\n[MySQL] NÃO FOI POSSÍVEL CONECTAR: ' + (mysqlStatus.error || 'sem detalhes'));
+        console.error('  1) Abra o XAMPP e clique em "Start" no MySQL (ele precisa estar verde).');
+        console.error('  2) Confira usuário/senha/host no arquivo .env (XAMPP: usuário root, senha vazia).');
+        console.error('  3) Sem MySQL, coloque MODO_LOCAL="true" ou BANCO_JSON="true" no .env (banco em JSON).\n');
+        process.exit(1);
+      }
+      console.warn('[Banco] MySQL não conectado em produção. Para usar banco em JSON, defina BANCO_JSON="true" (requer disco persistente na hospedagem).');
+    }
   }
-}
 
-// =============================================================================
-// ROTAS DE API DO BACKEND (/api/*)
-// =============================================================================
+  // =============================================================================
+  // ROTAS DE API DO BACKEND (/api/*)
+  // =============================================================================
 
-// =============================================================================
-// SEGURANÇA, LOGIN, PERMISSÕES, TURMAS, ALERTAS E AUDITORIA (pasta ./server)
-// Registrado ANTES das rotas abaixo: toda a API exige sessão e permissão.
-// =============================================================================
-const ORIGENS_PERMITIDAS = (process.env.APP_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
-if (MODO_LOCAL) {
-  try {
-    const local = await iniciarModoLocal(app, { producao: PRODUCAO, origensPermitidas: ORIGENS_PERMITIDAS });
-    local.log.forEach((l) => console.log(`[Modo local] ${l}`));
-    console.log(bannerModoLocal(local.arquivo, `http://localhost:${PORT}`));
-  } catch (e: any) {
-    console.error('\n[Modo local] não foi possível iniciar o banco SQLite:', e?.message || e);
-    console.error('[Modo local] Isso exige Node.js 22.13 ou mais novo (veja a versão com: node -v). Instale em https://nodejs.org ou configure o MySQL no .env.\n');
-    process.exit(1);
+  // =============================================================================
+  // SEGURANÇA, LOGIN, PERMISSÕES, TURMAS, ALERTAS E AUDITORIA (pasta ./server)
+  // Registrado ANTES das rotas abaixo: toda a API exige sessão e permissão.
+  // =============================================================================
+  const ORIGENS_PERMITIDAS = (process.env.APP_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
+  if (MODO_LOCAL) {
+    try {
+      const local = await iniciarModoLocal(app, { producao: PRODUCAO, origensPermitidas: ORIGENS_PERMITIDAS, permitirProducao: forcarJson });
+      local.log.forEach((l) => console.log(`[Modo local] ${l}`));
+      console.log(bannerModoLocal(local.arquivo, PRODUCAO ? (process.env.APP_URL || `http://localhost:${PORT}`) : `http://localhost:${PORT}`));
+    } catch (e: any) {
+      console.error('\n[Modo local] não foi possível iniciar o banco em JSON:', e?.message || e);
+      console.error('[Modo local] Isso exige Node.js 22.13 ou mais novo (veja a versão com: node -v). Instale em https://nodejs.org ou configure o MySQL no .env.\n');
+      process.exit(1);
+    }
+  } else {
+    registrarRotasCentrais(app, criarDbMysql(() => pool), { producao: PRODUCAO, origensPermitidas: ORIGENS_PERMITIDAS });
   }
-} else {
-  registrarRotasCentrais(app, criarDbMysql(() => pool), { producao: PRODUCAO, origensPermitidas: ORIGENS_PERMITIDAS });
-}
 
 // 1. Status do Banco de Dados
 app.get('/api/status', async (req: any, res: Response) => {

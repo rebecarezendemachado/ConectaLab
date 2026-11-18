@@ -25,10 +25,12 @@ export interface OpcoesModoLocal {
   env?: Record<string, string | undefined>;
   /** arquivo do instantâneo JSON (padrão: ./dados-locais/materia-reativa.json). Use ':memory:' em testes. */
   arquivo?: string;
+  /** Permite usar o banco JSON mesmo em produ��ǜo (ex.: hospedagem sem MySQL, com disco persistente). */
+  permitirProducao?: boolean;
 }
 
 export async function iniciarModoLocal(app: any, opc: OpcoesModoLocal): Promise<{ db: Db; arquivo: string; log: string[] }> {
-  if (opc.producao) throw new Error('O modo local não pode ser usado em produção.');
+  if (opc.producao && !opc.permitirProducao) throw new Error('O modo local n\u00e3o pode ser usado em produ\u00e7\u00e3o sem permitirProducao.');
   const env = opc.env || process.env;
   const arquivo = opc.arquivo ?? path.resolve(process.cwd(), 'dados-locais', 'materia-reativa.json');
   const persistente = arquivo !== ':memory:';
